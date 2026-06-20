@@ -10,13 +10,15 @@
         body { background-color: #0e1015; color: #ffffff; padding: 16px 12px; overflow-x: hidden; }
         .header { text-align: center; margin-bottom: 20px; margin-top: 5px; }
         .header h1 { font-size: 19px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .header p { font-size: 11px; color: #6d798a; margin-top: 4px; }
         .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .game-card { border-radius: 14px; aspect-ratio: 1 / 1.45; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: transform 0.1s ease; overflow: hidden; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #151822; }
         .game-card:active { transform: scale(0.95); }
         .game-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 55%; background: linear-gradient(to top, rgba(14,16,21,1) 0%, rgba(14,16,21,0.6) 50%, rgba(14,16,21,0) 100%); z-index: 1; }
-        .game-title { font-size: 11px; font-weight: 800; text-transform: uppercase; text-align: center; color: #ffffff; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.9); line-height: 1.1; }
-        .game-status { font-size: 7px; font-weight: 800; color: #00ffcc; text-transform: uppercase; margin-top: 4px; z-index: 2; background-color: rgba(0, 255, 204, 0.12); padding: 2px 6px; border-radius: 10px; }
+        .game-title { font-size: 11px; font-weight: 800; text-transform: uppercase; text-align: center; z-index: 2; }
+        
+        /* Style pour la page de chargement */
+        #interface-signal { display: none; text-align: center; padding-top: 50px; }
+        .btn-signal { margin-top: 20px; padding: 15px 40px; font-size: 18px; font-weight: bold; background: #00ffcc; color: #0e1015; border-radius: 10px; border: none; cursor: pointer; }
 
         .g164 { background-image: url('IMG_0164.WEBP'); }
         .g165 { background-image: url('IMG_0165.WEBP'); }
@@ -30,30 +32,44 @@
     </style>
 </head>
 <body>
+    <div id="main-menu">
+        <div class="header">
+            <h1>PLATEFORME DE SIGNAUX VIP</h1>
+            <p>Sélectionnez un robot pour lancer l'analyse</p>
+        </div>
+        <div class="games-grid">
+            <div class="game-card g164" onclick="preparerSignal('Lucky Jet')"><div class="game-title">Lucky Jet</div></div>
+            <div class="game-card g165" onclick="preparerSignal('Rocket Queen')"><div class="game-title">Rocket Queen</div></div>
+            <div class="game-card g166" onclick="preparerSignal('1win Crash')"><div class="game-title">1win Crash</div></div>
+            <div class="game-card g167" onclick="preparerSignal('Tropicana')"><div class="game-title">Tropicana</div></div>
+            <div class="game-card g168" onclick="preparerSignal('Fortune Crash')"><div class="game-title">Fortune Crash</div></div>
+            <div class="game-card g170" onclick="preparerSignal('Meta Crash')"><div class="game-title">Meta Crash</div></div>
+            <div class="game-card g171" onclick="preparerSignal('Empire Crime')"><div class="game-title">Empire Crime</div></div>
+            <div class="game-card g172" onclick="preparerSignal('Astronaut')"><div class="game-title">Astronaut</div></div>
+            <div class="game-card g173" onclick="preparerSignal('Aviator')"><div class="game-title">Aviator</div></div>
+        </div>
+    </div>
+
+    <div id="interface-signal">
+        <h2 id="nom-jeu-sel"></h2>
+        <p style="margin-top:10px; color:#6d798a;">Analyse prête à être lancée</p>
+        <button class="btn-signal" id="btn-valid">SIGNAL</button>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
-        function envoyerSignal(nomJeu) {
-            tg.sendData(nomJeu); 
-            tg.close();
+
+        function preparerSignal(nomJeu) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('interface-signal').style.display = 'block';
+            document.getElementById('nom-jeu-sel').innerText = nomJeu;
+            
+            document.getElementById('btn-valid').onclick = function() {
+                tg.sendData(nomJeu);
+                tg.close();
+            };
         }
     </script>
-
-    <div class="header">
-        <h1>PLATEFORME DE SIGNAUX VIP</h1>
-        <p>Sélectionnez un robot pour lancer l'analyse</p>
-    </div>
-    
-    <div class="games-grid">
-        <div class="game-card g164" onclick="envoyerSignal('Lucky Jet')"><div class="game-title">Lucky Jet</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g165" onclick="envoyerSignal('Rocket Queen')"><div class="game-title">Rocket Queen</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g166" onclick="envoyerSignal('1win Crash')"><div class="game-title">1win Crash</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g167" onclick="envoyerSignal('Tropicana')"><div class="game-title">Tropicana</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g168" onclick="envoyerSignal('Fortune Crash')"><div class="game-title">Fortune Crash</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g170" onclick="envoyerSignal('Meta Crash')"><div class="game-title">Meta Crash</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g171" onclick="envoyerSignal('Empire Crime')"><div class="game-title">Empire Crime</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g172" onclick="envoyerSignal('Astronaut')"><div class="game-title">Astronaut</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g173" onclick="envoyerSignal('Aviator')"><div class="game-title">Aviator</div><div class="game-status">Disponible</div></div>
-    </div>
 </body>
 </html>
