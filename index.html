@@ -9,26 +9,24 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
         body { background-color: #0e1015; color: #ffffff; padding: 16px; min-height: 100vh; }
         
-        /* Menu Principal */
         .header { text-align: center; margin-bottom: 20px; }
         .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; cursor: pointer; background-size: cover; background-position: center; background-color: #151822; }
+        .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; cursor: pointer; background-size: cover; background-position: center; background-color: #151822; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         
-        /* Interface Signal (le "intérieur" du jeu) */
         #interface-signal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
-        #interface-signal::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(14,16,21,0.85); backdrop-filter: blur(10px); }
+        #interface-signal::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(14,16,21,0.9); backdrop-filter: blur(10px); }
         
         .content-overlay { position: relative; z-index: 11; text-align: center; width: 100%; }
         
-        /* Animation de chargement (le scan) */
         .loader { width: 120px; height: 120px; border: 8px solid rgba(0,255,204,0.1); border-top: 8px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .btn-action { margin-top: 20px; padding: 15px 50px; font-size: 18px; font-weight: bold; border-radius: 30px; border: none; cursor: pointer; transition: 0.3s; }
+        #resultat-score { font-size: 45px; font-weight: 800; color: #00ffcc; margin: 20px 0; display: none; text-shadow: 0 0 20px rgba(0,255,204,0.5); }
+        
+        .btn-action { margin-top: 10px; padding: 15px 50px; font-size: 16px; font-weight: bold; border-radius: 30px; border: none; cursor: pointer; transition: 0.3s; }
         .btn-signal { background: #00ffcc; color: #0e1015; }
-        .btn-retour { background: transparent; border: 1px solid #6d798a; color: #fff; margin-top: 10px; }
+        .btn-retour { background: transparent; border: 1px solid #6d798a; color: #fff; }
 
-        /* Classes images (inchangées) */
         .g164 { background-image: url('IMG_0164.WEBP'); }
         .g165 { background-image: url('IMG_0165.WEBP'); }
         .g166 { background-image: url('IMG_0166.WEBP'); }
@@ -48,7 +46,7 @@
             <div class="game-card g165" onclick="ouvrirJeu('Rocket Queen', 'g165')">Rocket Queen</div>
             <div class="game-card g166" onclick="ouvrirJeu('1win Crash', 'g166')">1win Crash</div>
             <div class="game-card g167" onclick="ouvrirJeu('Tropicana', 'g167')">Tropicana</div>
-            <div class="game-card g168" onclick="envoyerSignal('Fortune Crash', 'g168')">Fortune Crash</div>
+            <div class="game-card g168" onclick="ouvrirJeu('Fortune Crash', 'g168')">Fortune Crash</div>
             <div class="game-card g170" onclick="ouvrirJeu('Meta Crash', 'g170')">Meta Crash</div>
             <div class="game-card g171" onclick="ouvrirJeu('Empire Crime', 'g171')">Empire Crime</div>
             <div class="game-card g172" onclick="ouvrirJeu('Astronaut', 'g172')">Astronaut</div>
@@ -58,8 +56,9 @@
 
     <div id="interface-signal">
         <div class="content-overlay">
-            <h2 id="nom-jeu-titre"></h2>
+            <h2 id="nom-jeu-titre" style="text-transform: uppercase;"></h2>
             <div class="loader" id="loader"></div>
+            <div id="resultat-score">--.--x</div>
             <button class="btn-action btn-signal" id="btn-signal" onclick="lancerCalcul()">SIGNAL</button>
             <button class="btn-action btn-retour" onclick="fermerJeu()">RETOUR</button>
         </div>
@@ -73,10 +72,11 @@
             document.getElementById('main-menu').style.display = 'none';
             const interface = document.getElementById('interface-signal');
             interface.style.display = 'flex';
-            interface.className = classe; // Applique l'image du jeu en fond
+            interface.className = classe;
             document.getElementById('nom-jeu-titre').innerText = nom;
             document.getElementById('btn-signal').style.display = 'inline-block';
             document.getElementById('loader').style.display = 'none';
+            document.getElementById('resultat-score').style.display = 'none';
             document.getElementById('btn-signal').dataset.nom = nom;
         }
 
@@ -88,13 +88,18 @@
         function lancerCalcul() {
             document.getElementById('btn-signal').style.display = 'none';
             document.getElementById('loader').style.display = 'block';
-            
             const nom = document.getElementById('btn-signal').dataset.nom;
             
-            // Simulation de l'analyse
+            // Envoi au bot
+            tg.sendData(nom);
+            
+            // Animation de scan interne
             setTimeout(() => {
-                tg.sendData(nom);
-                tg.close();
+                document.getElementById('loader').style.display = 'none';
+                const score = (Math.random() * (10 - 1.5) + 1.5).toFixed(2) + "x";
+                const resDiv = document.getElementById('resultat-score');
+                resDiv.innerText = score;
+                resDiv.style.display = 'block';
             }, 2500);
         }
     </script>
