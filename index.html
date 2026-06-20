@@ -2,85 +2,67 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PLATEFORME VIP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
         body { background-color: #0e1015; color: #ffffff; padding: 16px; min-height: 100vh; }
-        
-        .header { text-align: center; margin-bottom: 20px; }
         .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; cursor: pointer; background-size: cover; background-position: center; background-color: #151822; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        
-        #interface-signal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
-        #interface-signal::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(14,16,21,0.9); backdrop-filter: blur(10px); }
-        
-        .content-overlay { position: relative; z-index: 11; text-align: center; width: 100%; }
-        
-        .loader { width: 120px; height: 120px; border: 8px solid rgba(0,255,204,0.1); border-top: 8px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        #resultat-score { font-size: 45px; font-weight: 800; color: #00ffcc; margin: 20px 0; display: none; text-shadow: 0 0 20px rgba(0,255,204,0.5); }
-        
-        .btn-action { margin-top: 10px; padding: 15px 50px; font-size: 16px; font-weight: bold; border-radius: 30px; border: none; cursor: pointer; transition: 0.3s; }
-        .btn-signal { background: #00ffcc; color: #0e1015; }
-        .btn-retour { background: transparent; border: 1px solid #6d798a; color: #fff; }
-
-        .g164 { background-image: url('IMG_0164.WEBP'); }
-        .g165 { background-image: url('IMG_0165.WEBP'); }
-        .g166 { background-image: url('IMG_0166.WEBP'); }
-        .g167 { background-image: url('IMG_0167.WEBP'); }
-        .g168 { background-image: url('IMG_0168.WEBP'); }
-        .g170 { background-image: url('IMG_0170.WEBP'); }
-        .g171 { background-image: url('IMG_0171.WEBP'); }
-        .g172 { background-image: url('IMG_0172.WEBP'); }
-        .g173 { background-image: url('IMG_0173.WEBP'); }
+        .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-color: #151822; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        #interface-signal, #admin-interface { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(14,16,21,0.98); flex-direction: column; align-items: center; justify-content: center; z-index: 20; padding: 20px; }
+        .btn-action { padding: 15px 30px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; margin: 10px; }
+        .admin-btn { position: fixed; bottom: 20px; right: 20px; background: #ff3333; color: white; border-radius: 50%; width: 50px; height: 50px; border: none; display: none; }
+        .admin-row { display: flex; justify-content: space-between; width: 100%; margin: 10px 0; background: #222; padding: 10px; border-radius: 8px; }
     </style>
 </head>
 <body>
+
     <div id="main-menu">
-        <div class="header"><h1>PLATEFORME VIP</h1></div>
+        <h1 style="text-align:center; margin-bottom:20px;">PLATEFORME VIP</h1>
         <div class="games-grid">
-            <div class="game-card g164" onclick="ouvrirJeu('Lucky Jet', 'g164')">Lucky Jet</div>
-            <div class="game-card g165" onclick="ouvrirJeu('Rocket Queen', 'g165')">Rocket Queen</div>
-            <div class="game-card g166" onclick="ouvrirJeu('1win Crash', 'g166')">1win Crash</div>
-            <div class="game-card g167" onclick="ouvrirJeu('Tropicana', 'g167')">Tropicana</div>
-            <div class="game-card g168" onclick="ouvrirJeu('Fortune Crash', 'g168')">Fortune Crash</div>
-            <div class="game-card g170" onclick="ouvrirJeu('Meta Crash', 'g170')">Meta Crash</div>
-            <div class="game-card g171" onclick="ouvrirJeu('Empire Crime', 'g171')">Empire Crime</div>
-            <div class="game-card g172" onclick="ouvrirJeu('Astronaut', 'g172')">Astronaut</div>
-            <div class="game-card g173" onclick="ouvrirJeu('Aviator', 'g173')">Aviator</div>
+            <div class="game-card" onclick="ouvrirJeu('Lucky Jet', 1.5)">Lucky Jet</div>
+            <div class="game-card" onclick="ouvrirJeu('Aviator', 2.0)">Aviator</div>
+            <div class="game-card" onclick="ouvrirJeu('Tropicana', 1.5)">Tropicana</div>
         </div>
     </div>
 
     <div id="interface-signal">
-        <div class="content-overlay">
-            <h2 id="nom-jeu-titre" style="text-transform: uppercase;"></h2>
-            <div class="loader" id="loader"></div>
-            <div id="resultat-score">--.--x</div>
-            <button class="btn-action btn-signal" id="btn-signal" onclick="lancerCalcul()">SIGNAL</button>
-            <button class="btn-action btn-retour" onclick="fermerJeu()">RETOUR</button>
-        </div>
+        <h2 id="nom-jeu-titre"></h2>
+        <div id="resultat-affichage" style="margin:20px 0; text-align:center; font-size: 18px;"></div>
+        <button class="btn-action" style="background:#00ffcc" id="btn-signal" onclick="lancerCalcul()">DEMANDER SIGNAL</button>
+        <button class="btn-action" style="background:transparent; border:1px solid #6d798a; color:#fff" onclick="fermerJeu()">RETOUR</button>
     </div>
+
+    <div id="admin-interface">
+        <h2>PANNEAU ADMIN</h2>
+        <div id="admin-list" style="width:100%; margin: 20px 0;"></div>
+        <button class="btn-action" style="background:#ff3333; color:white" onclick="document.getElementById('admin-interface').style.display='none'">FERMER</button>
+    </div>
+
+    <button id="admin-panel-btn" class="admin-btn" onclick="ouvrirAdmin()">⚙️</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
-        
-        // Blocage de la fermeture automatique
-        tg.enableClosingConfirmation = false;
 
-        function ouvrirJeu(nom, classe) {
+        // Stockage des intervalles (sauvegardés dans le navigateur)
+        let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
+            'Lucky Jet': 4, 'Aviator': 4, 'Tropicana': 5
+        };
+
+        if(tg.initDataUnsafe.user && tg.initDataUnsafe.user.id == 5724620019) {
+            document.getElementById('admin-panel-btn').style.display = 'block';
+        }
+
+        let currentGame = { nom: '', fiab: 0 };
+
+        function ouvrirJeu(nom, fiab) {
+            currentGame = { nom, fiab };
             document.getElementById('main-menu').style.display = 'none';
-            const interface = document.getElementById('interface-signal');
-            interface.style.display = 'flex';
-            interface.className = classe;
+            document.getElementById('interface-signal').style.display = 'flex';
             document.getElementById('nom-jeu-titre').innerText = nom;
-            document.getElementById('btn-signal').style.display = 'inline-block';
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('resultat-score').style.display = 'none';
-            document.getElementById('btn-signal').dataset.nom = nom;
+            document.getElementById('resultat-affichage').innerHTML = "Prêt à générer...";
         }
 
         function fermerJeu() {
@@ -89,21 +71,39 @@
         }
 
         function lancerCalcul() {
-            document.getElementById('btn-signal').style.display = 'none';
-            document.getElementById('loader').style.display = 'block';
-            const nom = document.getElementById('btn-signal').dataset.nom;
-            
-            // On envoie la donnée au bot sans fermer
-            tg.sendData(nom);
-            
-            // Animation de scan interne
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                const score = (Math.random() * (10 - 1.5) + 1.5).toFixed(2) + "x";
-                const resDiv = document.getElementById('resultat-score');
-                resDiv.innerText = score;
-                resDiv.style.display = 'block';
-            }, 2500);
+            const m = new Date().getMinutes();
+            const interval = configJeux[currentGame.nom];
+            const nextM = m + (interval - (m % interval));
+            const heureCible = new Date();
+            heureCible.setMinutes(nextM);
+            heureCible.setSeconds(0);
+
+            document.getElementById('resultat-affichage').innerHTML = `
+                Cote: ${(Math.random()*(20-10)+10).toFixed(2)}x<br>
+                Fiabilité: ${currentGame.fiab}<br>
+                <b>Prochain signal: ${heureCible.toLocaleTimeString()}</b>
+            `;
+        }
+
+        function ouvrirAdmin() {
+            document.getElementById('admin-interface').style.display = 'flex';
+            const list = document.getElementById('admin-list');
+            list.innerHTML = "";
+            for(let nom in configJeux) {
+                list.innerHTML += `
+                    <div class="admin-row">
+                        <span>${nom}</span>
+                        <input type="number" id="inp-${nom}" value="${configJeux[nom]}" style="width:50px">
+                        <button onclick="saveAdmin('${nom}')">OK</button>
+                    </div>`;
+            }
+        }
+
+        function saveAdmin(nom) {
+            const val = document.getElementById('inp-'+nom).value;
+            configJeux[nom] = parseInt(val);
+            localStorage.setItem('configJeux', JSON.stringify(configJeux));
+            alert(nom + " réglé sur " + val + " minutes.");
         }
     </script>
 </body>
