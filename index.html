@@ -89,16 +89,16 @@
             const intervalMin = configJeux[currentGame.nom] || 4;
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
 
-            // Calcul du début de cycle basé sur les minutes et la seconde fixe
+            // On crée le point de départ en forçant la seconde fixe
             let debutSignal = new Date(now);
             debutSignal.setSeconds(targetSec);
             debutSignal.setMilliseconds(0);
             
-            // Ajustement du bloc de minutes
+            // On calcule le bloc de minutes
             const minutes = debutSignal.getMinutes();
             debutSignal.setMinutes(Math.floor(minutes / intervalMin) * intervalMin);
 
-            // Si on a dépassé le moment du signal dans le cycle actuel, on ajuste
+            // Correction si on est passé au-delà de la fenêtre, on recule d'un cycle
             if (debutSignal.getTime() > now.getTime()) {
                 debutSignal.setMinutes(debutSignal.getMinutes() - intervalMin);
             }
@@ -107,7 +107,6 @@
                 hour: '2-digit', minute: '2-digit', second: '2-digit'
             });
 
-            // Graine basée sur le timestamp du début pour synchronisation
             const seed = debutSignal.getTime() + (currentGame.nom.length * 9999);
             const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
             const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
