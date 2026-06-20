@@ -63,10 +63,10 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
 
-        // Réglages par défaut : 30s pour Lucky Jet, 50s pour les autres
+        // Réglages par défaut : Intervalle en MINUTES
         let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
-            'Lucky Jet': 30, 'Rocket Queen': 50, '1win Crash': 50, 'Tropicana': 50,
-            'Fortune Crash': 50, 'Meta Crash': 50, 'Empire Crime': 50, 'Astronaut': 50, 'Aviator': 50
+            'Lucky Jet': 4, 'Rocket Queen': 4, '1win Crash': 4, 'Tropicana': 4,
+            'Fortune Crash': 4, 'Meta Crash': 4, 'Empire Crime': 4, 'Astronaut': 4, 'Aviator': 4
         };
 
         if(tg.initDataUnsafe.user && tg.initDataUnsafe.user.id == 5724620019) {
@@ -85,22 +85,33 @@
         }
 
         function lancerCalcul() {
-            const now = Date.now();
-            const intervalSec = configJeux[currentGame.nom] || 50;
-            const intervalMs = intervalSec * 1000;
+            const now = new Date();
+            const intervalMin = configJeux[currentGame.nom] || 4;
+            const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
+
+            // Calcul du début de cycle basé sur les minutes et la seconde fixe
+            let debutSignal = new Date(now);
+            debutSignal.setSeconds(targetSec);
+            debutSignal.setMilliseconds(0);
             
-            // Calcul du début de la période fixe
-            const periodStart = Math.floor(now / intervalMs) * intervalMs;
-            
-            // Calcul basé sur le début de période pour synchroniser tout le monde
-            const seed = periodStart + (currentGame.nom.length * 9999);
+            // Ajustement du bloc de minutes
+            const minutes = debutSignal.getMinutes();
+            debutSignal.setMinutes(Math.floor(minutes / intervalMin) * intervalMin);
+
+            // Si on a dépassé le moment du signal dans le cycle actuel, on ajuste
+            if (debutSignal.getTime() > now.getTime()) {
+                debutSignal.setMinutes(debutSignal.getMinutes() - intervalMin);
+            }
+
+            const heureDebut = debutSignal.toLocaleTimeString('fr-FR', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            // Graine basée sur le timestamp du début pour synchronisation
+            const seed = debutSignal.getTime() + (currentGame.nom.length * 9999);
             const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
             const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
             const fiab = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
-            
-            const heureDebut = new Date(periodStart).toLocaleTimeString('fr-FR', {
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
             
             const html = `<p>Cote cible: <b>${cote}x</b></p><p>Fiabilité: <b>${fiab}</b></p><p>Début du signal: <b style="color:#00ffcc">${heureDebut}</b></p>`;
             
@@ -113,7 +124,7 @@
             const list = document.getElementById('admin-list');
             list.innerHTML = "";
             for(let nom in configJeux) {
-                list.innerHTML += `<div class="admin-row"><span>${nom}</span><input type="number" id="inp-${nom.replace(/\s/g,'')}" value="${configJeux[nom]}">s <button onclick="saveAdmin('${nom}')">OK</button></div>`;
+                list.innerHTML += `<div class="admin-row"><span>${nom}</span><input type="number" id="inp-${nom.replace(/\s/g,'')}" value="${configJeux[nom]}">min <button onclick="saveAdmin('${nom}')">OK</button></div>`;
             }
         }
 
@@ -121,7 +132,7 @@
             const val = document.getElementById('inp-'+nom.replace(/\s/g, '')).value;
             configJeux[nom] = parseInt(val);
             localStorage.setItem('configJeux', JSON.stringify(configJeux));
-            alert("Réglage enregistré pour " + nom + " : " + val + " secondes.");
+            alert("Intervalle pour " + nom + " fixé à " + val + " minute(s).");
         }
 
         function fermerJeu() { location.reload(); }
