@@ -63,7 +63,6 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
 
-        // Réglages par défaut : Intervalle en MINUTES
         let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
             'Lucky Jet': 4, 'Rocket Queen': 4, '1win Crash': 4, 'Tropicana': 4,
             'Fortune Crash': 4, 'Meta Crash': 4, 'Empire Crime': 4, 'Astronaut': 4, 'Aviator': 4
@@ -85,6 +84,7 @@
         }
 
         function lancerCalcul() {
+            // Utilise l'heure exacte de l'appareil
             const now = new Date();
             const intervalMin = configJeux[currentGame.nom] || 4;
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
@@ -98,7 +98,7 @@
             const minutes = debutSignal.getMinutes();
             debutSignal.setMinutes(Math.floor(minutes / intervalMin) * intervalMin);
 
-            // Correction si on est passé au-delà de la fenêtre, on recule d'un cycle
+            // Ajustement : si on est dans le futur par rapport à maintenant, on recule
             if (debutSignal.getTime() > now.getTime()) {
                 debutSignal.setMinutes(debutSignal.getMinutes() - intervalMin);
             }
@@ -107,6 +107,7 @@
                 hour: '2-digit', minute: '2-digit', second: '2-digit'
             });
 
+            // Graine basée sur le timestamp du début pour synchroniser tout le monde
             const seed = debutSignal.getTime() + (currentGame.nom.length * 9999);
             const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
             const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
