@@ -18,7 +18,6 @@
         .game-title { font-size: 11px; font-weight: 800; text-transform: uppercase; text-align: center; color: #ffffff; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.9); line-height: 1.1; }
         .game-status { font-size: 7px; font-weight: 800; color: #00ffcc; text-transform: uppercase; margin-top: 4px; z-index: 2; background-color: rgba(0, 255, 204, 0.12); padding: 2px 6px; border-radius: 10px; }
 
-        /* Liaison avec tes fichiers .WEBP sur GitHub */
         .g164 { background-image: url('IMG_0164.WEBP'); }
         .g165 { background-image: url('IMG_0165.WEBP'); }
         .g166 { background-image: url('IMG_0166.WEBP'); }
@@ -30,29 +29,32 @@
         .g173 { background-image: url('IMG_0173.WEBP'); }
     </style>
 </head>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-
-    function envoyerSignal(nomJeu) {
-        tg.sendData(nomJeu); // Envoie le nom du jeu au bot
-        tg.close();
-    }
-</script>
-
 <body>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+
+        function envoyerSignal(nomJeu) {
+            tg.sendData(nomJeu);
+            tg.close();
+        }
+    </script>
+
     <div class="header">
         <h1>PLATEFORME DE SIGNAUX VIP</h1>
         <p>Sélectionnez un robot pour lancer l'analyse</p>
     </div>
+    
     <div class="games-grid">
-        <div class="game-card g164" onclick="selectGame('Lucky Jet')"><div class="game-title">Lucky Jet</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g165" onclick="selectGame('Rocket Queen')"><div class="game-title">Rocket Queen</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g166" onclick="selectGame('1win Crash')"><div class="game-title">1win Crash</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g167" onclick="selectGame('Tropicana')"><div class="game-title">Tropicana</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g168" onclick="selectGame('Fortune Crash')"><div class="game-title">Fortune Crash</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g170" onclick="selectGame('Meta Crash')"><div class="game-title">Meta Crash</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g171" onclick="selectGame('Empire Crime')"><div class="game-title">Empire Crime</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g172" onclick="selectGame('Astronaut')"><div class="game-title">Astronaut</div><div class="game-status">Disponible</div></div>
-        <div class="game-card g173" onclick="selectGame('Aviator')"><div class="game-title">
+        <div class="game-card g164" onclick="envoyerSignal('Lucky Jet')"><div class="game-title">Lucky Jet</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g165" onclick="envoyerSignal('Rocket Queen')"><div class="game-title">Rocket Queen</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g166" onclick="envoyerSignal('1win Crash')"><div class="game-title">1win Crash</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g167" onclick="envoyerSignal('Tropicana')"><div class="game-title">Tropicana</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g168" onclick="envoyerSignal('Fortune Crash')"><div class="game-title">Fortune Crash</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g170" onclick="envoyerSignal('Meta Crash')"><div class="game-title">Meta Crash</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g171" onclick="envoyerSignal('Empire Crime')"><div class="game-title">Empire Crime</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g172" onclick="envoyerSignal('Astronaut')"><div class="game-title">Astronaut</div><div class="game-status">Disponible</div></div>
+        <div class="game-card g173" onclick="envoyerSignal('Aviator')"><div class="game-title">Aviator</div><div class="game-status">Disponible</div></div>
+    </div>
+</body>
+</html>
