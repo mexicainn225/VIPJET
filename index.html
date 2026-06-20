@@ -84,21 +84,19 @@
         }
 
         function lancerCalcul() {
-            // Utilise l'heure exacte de l'appareil
-            const now = new Date();
+            const now = new Date(); // Heure locale exacte de l'appareil
             const intervalMin = configJeux[currentGame.nom] || 4;
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
 
-            // On crée le point de départ en forçant la seconde fixe
             let debutSignal = new Date(now);
             debutSignal.setSeconds(targetSec);
             debutSignal.setMilliseconds(0);
             
-            // On calcule le bloc de minutes
-            const minutes = debutSignal.getMinutes();
-            debutSignal.setMinutes(Math.floor(minutes / intervalMin) * intervalMin);
+            // Calcul du bloc de minutes en cours
+            const currentMin = debutSignal.getMinutes();
+            debutSignal.setMinutes(Math.floor(currentMin / intervalMin) * intervalMin);
 
-            // Ajustement : si on est dans le futur par rapport à maintenant, on recule
+            // Ajustement si le calcul est dans le futur
             if (debutSignal.getTime() > now.getTime()) {
                 debutSignal.setMinutes(debutSignal.getMinutes() - intervalMin);
             }
@@ -107,15 +105,15 @@
                 hour: '2-digit', minute: '2-digit', second: '2-digit'
             });
 
-            // Graine basée sur le timestamp du début pour synchroniser tout le monde
             const seed = debutSignal.getTime() + (currentGame.nom.length * 9999);
             const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
             const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
             const fiab = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
             
-            const html = `<p>Cote cible: <b>${cote}x</b></p><p>Fiabilité: <b>${fiab}</b></p><p>Début du signal: <b style="color:#00ffcc">${heureDebut}</b></p>`;
-            
-            document.getElementById('resultat-affichage').innerHTML = html;
+            document.getElementById('resultat-affichage').innerHTML = `
+                <p>Cote cible: <b>${cote}x</b></p>
+                <p>Fiabilité: <b>${fiab}</b></p>
+                <p>Début du signal: <b style="color:#00ffcc">${heureDebut}</b></p>`;
             document.getElementById('resultat-affichage').style.display = 'block';
         }
 
