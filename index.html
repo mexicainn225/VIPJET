@@ -10,13 +10,11 @@
         body { background-color: #0e1015; color: #ffffff; padding: 16px; min-height: 100vh; }
         .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; cursor: pointer; background-size: cover; background-position: center; background-color: #151822; font-size: 10px; font-weight: bold; text-transform: uppercase; text-align: center; }
-        /* Classes pour les images */
         .g164 { background-image: url('IMG_0164.WEBP'); } .g165 { background-image: url('IMG_0165.WEBP'); }
         .g166 { background-image: url('IMG_0166.WEBP'); } .g167 { background-image: url('IMG_0167.WEBP'); }
         .g168 { background-image: url('IMG_0168.WEBP'); } .g170 { background-image: url('IMG_0170.WEBP'); }
         .g171 { background-image: url('IMG_0171.WEBP'); } .g172 { background-image: url('IMG_0172.WEBP'); }
         .g173 { background-image: url('IMG_0173.WEBP'); }
-        
         #interface-signal, #admin-interface { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0e1015; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
         .content-overlay { text-align: center; width: 100%; padding: 20px; }
         .game-icon-small { width: 80px; height: 80px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #00ffcc; margin: 0 auto 15px auto; }
@@ -55,6 +53,11 @@
 
     <div id="admin-interface">
         <h2>PANNEAU ADMIN</h2>
+        <div class="admin-row">
+            <span>Décalage Global (sec):</span>
+            <input type="number" id="globalOffset" value="0" style="width:60px;">
+            <button onclick="saveGlobalOffset()">OK</button>
+        </div>
         <div id="admin-list" style="width:100%;"></div>
         <button class="btn-action" onclick="document.getElementById('admin-interface').style.display='none'">FERMER</button>
     </div>
@@ -85,8 +88,17 @@
             document.getElementById('resultat-affichage').style.display = 'none';
         }
 
+        function saveGlobalOffset() {
+            const val = document.getElementById('globalOffset').value;
+            localStorage.setItem('globalOffset', val);
+            alert("Décalage global enregistré : " + val + " secondes.");
+        }
+
         function lancerCalcul() {
-            const now = new Date();
+            const offset = parseInt(localStorage.getItem('globalOffset')) || 0;
+            // On ajoute le décalage (en secondes) à l'heure actuelle
+            const now = new Date(Date.now() + (offset * 1000));
+            
             const intervalMin = configJeux[currentGame.nom] || 4;
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
 
@@ -118,6 +130,7 @@
 
         function ouvrirAdmin() {
             document.getElementById('admin-interface').style.display = 'flex';
+            document.getElementById('globalOffset').value = localStorage.getItem('globalOffset') || 0;
             const list = document.getElementById('admin-list');
             list.innerHTML = "";
             for(let nom in configJeux) {
