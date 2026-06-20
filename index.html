@@ -89,14 +89,12 @@
         }
 
         function saveGlobalOffset() {
-            const val = document.getElementById('globalOffset').value;
-            localStorage.setItem('globalOffset', val);
-            alert("Décalage global enregistré : " + val + " secondes.");
+            localStorage.setItem('globalOffset', document.getElementById('globalOffset').value);
+            alert("Décalage global enregistré.");
         }
 
         function lancerCalcul() {
             const offset = parseInt(localStorage.getItem('globalOffset')) || 0;
-            // On ajoute le décalage (en secondes) à l'heure actuelle
             const now = new Date(Date.now() + (offset * 1000));
             
             const intervalMin = configJeux[currentGame.nom] || 4;
@@ -109,8 +107,9 @@
             const minutes = debutSignal.getMinutes();
             debutSignal.setMinutes(Math.floor(minutes / intervalMin) * intervalMin);
 
-            if (debutSignal.getTime() > now.getTime()) {
-                debutSignal.setMinutes(debutSignal.getMinutes() - intervalMin);
+            // Signal toujours affiché, même si en avance
+            if (debutSignal.getTime() < now.getTime()) {
+                debutSignal.setMinutes(debutSignal.getMinutes() + intervalMin);
             }
 
             const pad = (num) => num.toString().padStart(2, '0');
