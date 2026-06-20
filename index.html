@@ -34,8 +34,9 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
 
+        // On utilise la fonction 'envoyerSignal' ici
         function envoyerSignal(nomJeu) {
-            tg.sendData(nomJeu);
+            tg.sendData(nomJeu); 
             tg.close();
         }
     </script>
