@@ -8,30 +8,18 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #0e1015; color: #ffffff; padding: 16px; min-height: 100vh; }
-        
-        .header { text-align: center; margin-bottom: 20px; }
         .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; cursor: pointer; background-size: cover; background-position: center; background-color: #151822; font-size: 10px; font-weight: bold; text-transform: uppercase; text-align: center; }
-        
-        /* Interface Signal - z-index géré pour ne pas bloquer les clics */
-        #interface-signal, #admin-interface { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        #interface-signal::before, #admin-interface::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(14,16,21,0.95); backdrop-filter: blur(10px); z-index: -1; pointer-events: none; }
-        
+        #interface-signal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        #interface-signal::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(14,16,21,0.95); backdrop-filter: blur(10px); z-index: -1; pointer-events: none; }
         .content-overlay { position: relative; z-index: 101; text-align: center; width: 100%; padding: 20px; }
-        
-        .game-icon-small { width: 80px; height: 80px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #00ffcc; margin: 0 auto 15px auto; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
-        
-        .loader { width: 80px; height: 80px; border: 6px solid #00ffcc33; border-top: 6px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
+        .game-icon-small { width: 80px; height: 80px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #00ffcc; margin: 0 auto 15px auto; }
+        .loader { width: 40px; height: 40px; border: 4px solid #00ffcc33; border-top: 4px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .result-box { background: #1c1f26; padding: 15px; border-radius: 15px; margin: 20px 0; display: none; border: 1px solid #333; }
         .btn-action { margin-top: 10px; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 30px; border: none; cursor: pointer; width: 80%; }
         .btn-signal { background: #00ffcc; color: #0e1015; }
         .btn-retour { background: transparent; border: 1px solid #6d798a; color: #fff; }
-        
-        .admin-btn { position: fixed; bottom: 20px; right: 20px; background: #ff3333; color: white; border-radius: 50%; width: 50px; height: 50px; border: none; display: none; z-index: 200; }
-        .admin-row { display: flex; justify-content: space-between; align-items: center; width: 90%; margin: 10px 0; background: #222; padding: 10px; border-radius: 8px; }
-
         .g164 { background-image: url('IMG_0164.WEBP'); }
         .g165 { background-image: url('IMG_0165.WEBP'); }
         .g166 { background-image: url('IMG_0166.WEBP'); }
@@ -45,17 +33,17 @@
 </head>
 <body>
     <div id="main-menu">
-        <div class="header"><h1>PLATEFORME VIP</h1></div>
+        <h1 style="text-align:center; margin-bottom:20px;">PLATEFORME VIP</h1>
         <div class="games-grid">
-            <div class="game-card g164" onclick="ouvrirJeu('Lucky Jet', 'g164', 1.5)">Lucky Jet</div>
-            <div class="game-card g165" onclick="ouvrirJeu('Rocket Queen', 'g165', 1.5)">Rocket Queen</div>
-            <div class="game-card g166" onclick="ouvrirJeu('1win Crash', 'g166', 1.5)">1win Crash</div>
-            <div class="game-card g167" onclick="ouvrirJeu('Tropicana', 'g167', 1.5)">Tropicana</div>
-            <div class="game-card g168" onclick="ouvrirJeu('Fortune Crash', 'g168', 1.5)">Fortune Crash</div>
-            <div class="game-card g170" onclick="ouvrirJeu('Meta Crash', 'g170', 1.5)">Meta Crash</div>
-            <div class="game-card g171" onclick="ouvrirJeu('Empire Crime', 'g171', 1.5)">Empire Crime</div>
-            <div class="game-card g172" onclick="ouvrirJeu('Astronaut', 'g172', 1.5)">Astronaut</div>
-            <div class="game-card g173" onclick="ouvrirJeu('Aviator', 'g173', 2.0)">Aviator</div>
+            <div class="game-card g164" onclick="ouvrirJeu('Lucky Jet', 'g164')">Lucky Jet</div>
+            <div class="game-card g165" onclick="ouvrirJeu('Rocket Queen', 'g165')">Rocket Queen</div>
+            <div class="game-card g166" onclick="ouvrirJeu('1win Crash', 'g166')">1win Crash</div>
+            <div class="game-card g167" onclick="ouvrirJeu('Tropicana', 'g167')">Tropicana</div>
+            <div class="game-card g168" onclick="ouvrirJeu('Fortune Crash', 'g168')">Fortune Crash</div>
+            <div class="game-card g170" onclick="ouvrirJeu('Meta Crash', 'g170')">Meta Crash</div>
+            <div class="game-card g171" onclick="ouvrirJeu('Empire Crime', 'g171')">Empire Crime</div>
+            <div class="game-card g172" onclick="ouvrirJeu('Astronaut', 'g172')">Astronaut</div>
+            <div class="game-card g173" onclick="ouvrirJeu('Aviator', 'g173')">Aviator</div>
         </div>
     </div>
 
@@ -63,38 +51,21 @@
         <div class="content-overlay">
             <div id="game-icon" class="game-icon-small"></div>
             <h2 id="nom-jeu-titre" style="text-transform: uppercase;"></h2>
-            <div class="loader" id="loader"></div>
+            <div id="loader" class="loader"></div>
             <div id="resultat-affichage" class="result-box"></div>
             <button class="btn-action btn-signal" id="btn-signal" onclick="lancerCalcul()">DEMANDER SIGNAL</button>
             <button class="btn-action btn-retour" onclick="fermerJeu()">RETOUR</button>
         </div>
     </div>
 
-    <div id="admin-interface">
-        <h2>PANNEAU ADMIN</h2>
-        <div id="admin-list" style="width:100%; margin: 20px 0; display:flex; flex-direction:column; align-items:center;"></div>
-        <button class="btn-action" style="background:#ff3333; color:white" onclick="document.getElementById('admin-interface').style.display='none'">FERMER</button>
-    </div>
-
-    <button id="admin-panel-btn" class="admin-btn" onclick="ouvrirAdmin()">⚙️</button>
-
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
-        
-        let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
-            'Lucky Jet': 4, 'Rocket Queen': 4, '1win Crash': 4, 'Tropicana': 4, 
-            'Fortune Crash': 4, 'Meta Crash': 4, 'Empire Crime': 4, 'Astronaut': 4, 'Aviator': 4
-        };
 
-        if(tg.initDataUnsafe.user && tg.initDataUnsafe.user.id == 5724620019) {
-            document.getElementById('admin-panel-btn').style.display = 'block';
-        }
+        let currentGame = { nom: '', classe: '' };
 
-        let currentGame = { nom: '', classe: '', fiab: 0 };
-
-        function ouvrirJeu(nom, classe, fiab) {
-            currentGame = { nom: nom, classe: classe, fiab: fiab };
+        function ouvrirJeu(nom, classe) {
+            currentGame = { nom: nom, classe: classe };
             document.getElementById('main-menu').style.display = 'none';
             const interface = document.getElementById('interface-signal');
             interface.style.display = 'flex';
@@ -102,7 +73,7 @@
             document.getElementById('game-icon').className = 'game-icon-small ' + classe;
             document.getElementById('nom-jeu-titre').innerText = nom;
             document.getElementById('resultat-affichage').style.display = 'none';
-            document.getElementById('btn-signal').innerText = "DEMANDER SIGNAL";
+            document.getElementById('loader').style.display = 'none';
             document.getElementById('btn-signal').style.display = 'inline-block';
         }
 
@@ -114,52 +85,34 @@
         function lancerCalcul() {
             document.getElementById('btn-signal').style.display = 'none';
             document.getElementById('loader').style.display = 'block';
-            
+            document.getElementById('resultat-affichage').style.display = 'none';
+
             setTimeout(() => {
                 const now = new Date();
-                const m = now.getMinutes();
-                const interval = configJeux[currentGame.nom] || 4;
-                const nextM = m + (interval - (m % interval));
+                const timestamp = now.getTime();
+                const intervalSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
+                const intervalMs = intervalSec * 1000;
                 
-                const heureCible = new Date();
-                heureCible.setMinutes(nextM);
-                heureCible.setSeconds(0);
+                const periodStart = Math.floor(timestamp / intervalMs) * intervalMs;
+                const periodEnd = periodStart + intervalMs;
                 
-                const horaireFormat = heureCible.toLocaleTimeString('fr-FR', {
-                    hour: '2-digit', minute: '2-digit', second: '2-digit'
-                });
+                const seed = periodStart;
+                const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
+                const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
+                const fiab = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
+                
+                const heureFin = new Date(periodEnd);
+                const horaireFormat = heureFin.toLocaleTimeString('fr-FR');
 
                 document.getElementById('resultat-affichage').innerHTML = `
-                    <p>Cote cible: <b>${(Math.random()*(20-10)+10).toFixed(2)}x</b></p>
-                    <p>Fiabilité: <b>${currentGame.fiab}</b></p>
-                    <p>Heure: <b style="color:#00ffcc">${horaireFormat}</b></p>
+                    <p>Cote cible: <b>${cote}x</b></p>
+                    <p>Fiabilité: <b>${fiab}</b></p>
+                    <p>Heure fin signal: <b style="color:#00ffcc">${horaireFormat}</b></p>
                 `;
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('resultat-affichage').style.display = 'block';
-                document.getElementById('btn-signal').innerText = "SIGNAL SUIVANT";
                 document.getElementById('btn-signal').style.display = 'inline-block';
-            }, 2000);
-        }
-
-        function ouvrirAdmin() {
-            document.getElementById('admin-interface').style.display = 'flex';
-            const list = document.getElementById('admin-list');
-            list.innerHTML = "";
-            for(let nom in configJeux) {
-                list.innerHTML += `
-                    <div class="admin-row">
-                        <span>${nom}</span>
-                        <input type="number" id="inp-${nom.replace(/\s+/g, '')}" value="${configJeux[nom]}" style="width:50px">
-                        <button onclick="saveAdmin('${nom}')">OK</button>
-                    </div>`;
-            }
-        }
-
-        function saveAdmin(nom) {
-            const val = document.getElementById('inp-'+nom.replace(/\s+/g, '')).value;
-            configJeux[nom] = parseInt(val);
-            localStorage.setItem('configJeux', JSON.stringify(configJeux));
-            alert(nom + " réglé sur " + val + " min.");
+            }, 1000);
         }
     </script>
 </body>
