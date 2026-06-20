@@ -63,6 +63,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
 
+        // Réglages par défaut : 30s pour Lucky Jet, 50s pour les autres
         let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
             'Lucky Jet': 30, 'Rocket Queen': 50, '1win Crash': 50, 'Tropicana': 50,
             'Fortune Crash': 50, 'Meta Crash': 50, 'Empire Crime': 50, 'Astronaut': 50, 'Aviator': 50
@@ -80,31 +81,29 @@
             document.getElementById('interface-signal').style.display = 'flex';
             document.getElementById('game-icon').className = 'game-icon-small ' + classe;
             document.getElementById('nom-jeu-titre').innerText = nom;
-            
-            const cache = JSON.parse(sessionStorage.getItem('signal_' + nom));
-            if (cache && cache.periodEnd > Date.now()) {
-                document.getElementById('resultat-affichage').innerHTML = cache.html;
-                document.getElementById('resultat-affichage').style.display = 'block';
-            } else {
-                document.getElementById('resultat-affichage').style.display = 'none';
-            }
+            document.getElementById('resultat-affichage').style.display = 'none';
         }
 
         function lancerCalcul() {
             const now = Date.now();
             const intervalSec = configJeux[currentGame.nom] || 50;
             const intervalMs = intervalSec * 1000;
-            const periodStart = Math.floor(now / intervalMs) * intervalMs;
-            const periodEnd = periodStart + intervalMs;
             
-            // Calcul unique par jeu et par période
-            const seed = periodStart + currentGame.nom.length * 12345; 
+            // Calcul du début de la période fixe
+            const periodStart = Math.floor(now / intervalMs) * intervalMs;
+            
+            // Calcul basé sur le début de période pour synchroniser tout le monde
+            const seed = periodStart + (currentGame.nom.length * 9999);
             const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
             const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
             const fiab = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
             
-            const html = `<p>Cote cible: <b>${cote}x</b></p><p>Fiabilité: <b>${fiab}</b></p><p>Fin du signal: <b>${new Date(periodEnd).toLocaleTimeString()}</b></p>`;
-            sessionStorage.setItem('signal_' + currentGame.nom, JSON.stringify({html, periodEnd}));
+            const heureDebut = new Date(periodStart).toLocaleTimeString('fr-FR', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+            
+            const html = `<p>Cote cible: <b>${cote}x</b></p><p>Fiabilité: <b>${fiab}</b></p><p>Début du signal: <b style="color:#00ffcc">${heureDebut}</b></p>`;
+            
             document.getElementById('resultat-affichage').innerHTML = html;
             document.getElementById('resultat-affichage').style.display = 'block';
         }
@@ -122,7 +121,7 @@
             const val = document.getElementById('inp-'+nom.replace(/\s/g, '')).value;
             configJeux[nom] = parseInt(val);
             localStorage.setItem('configJeux', JSON.stringify(configJeux));
-            alert("Réglage enregistré pour " + nom);
+            alert("Réglage enregistré pour " + nom + " : " + val + " secondes.");
         }
 
         function fermerJeu() { location.reload(); }
