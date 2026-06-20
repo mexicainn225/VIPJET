@@ -30,6 +30,17 @@
         .g173 { background-image: url('IMG_0173.WEBP'); }
     </style>
 </head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    function envoyerSignal(nomJeu) {
+        tg.sendData(nomJeu); // Envoie le nom du jeu au bot
+        tg.close();
+    }
+</script>
+
 <body>
     <div class="header">
         <h1>PLATEFORME DE SIGNAUX VIP</h1>
