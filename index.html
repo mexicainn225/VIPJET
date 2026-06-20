@@ -16,6 +16,10 @@
         #interface-signal::before, #admin-interface::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 100%; background: rgba(14,16,21,0.95); backdrop-filter: blur(10px); z-index: -1; }
         
         .content-overlay { position: relative; z-index: 11; text-align: center; width: 100%; padding: 20px; }
+        
+        /* Style de la petite icône */
+        .game-icon-small { width: 80px; height: 80px; border-radius: 50%; background-size: cover; background-position: center; border: 3px solid #00ffcc; margin: 0 auto 15px auto; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
+
         .loader { width: 80px; height: 80px; border: 6px solid #00ffcc33; border-top: 6px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -56,6 +60,7 @@
 
     <div id="interface-signal">
         <div class="content-overlay">
+            <div id="game-icon" class="game-icon-small"></div>
             <h2 id="nom-jeu-titre" style="text-transform: uppercase;"></h2>
             <div class="loader" id="loader"></div>
             <div id="resultat-affichage" class="result-box"></div>
@@ -94,65 +99,6 @@
             const interface = document.getElementById('interface-signal');
             interface.style.display = 'flex';
             interface.className = classe;
-            document.getElementById('nom-jeu-titre').innerText = nom;
-            document.getElementById('resultat-affichage').style.display = 'none';
-            document.getElementById('btn-signal').innerText = "DEMANDER SIGNAL";
-        }
-
-        function fermerJeu() {
-            document.getElementById('interface-signal').style.display = 'none';
-            document.getElementById('main-menu').style.display = 'block';
-        }
-
-        function lancerCalcul() {
-            document.getElementById('btn-signal').style.display = 'none';
-            document.getElementById('loader').style.display = 'block';
             
-            setTimeout(() => {
-                const m = new Date().getMinutes();
-                const interval = configJeux[currentGame.nom] || 4;
-                const nextM = m + (interval - (m % interval));
-                
-                const heureCible = new Date();
-                heureCible.setMinutes(nextM);
-                heureCible.setSeconds(0);
-                
-                const horaireFormat = heureCible.toLocaleTimeString('fr-FR', {
-                    hour: '2-digit', minute: '2-digit', second: '2-digit'
-                });
-
-                document.getElementById('resultat-affichage').innerHTML = `
-                    <p>Cote cible: <b>${(Math.random()*(20-10)+10).toFixed(2)}x</b></p>
-                    <p>Fiabilité: <b>${currentGame.fiab}</b></p>
-                    <p>Heure: <b style="color:#00ffcc">${horaireFormat}</b></p>
-                `;
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('resultat-affichage').style.display = 'block';
-                document.getElementById('btn-signal').innerText = "SIGNAL SUIVANT";
-                document.getElementById('btn-signal').style.display = 'inline-block';
-            }, 2000);
-        }
-
-        function ouvrirAdmin() {
-            document.getElementById('admin-interface').style.display = 'flex';
-            const list = document.getElementById('admin-list');
-            list.innerHTML = "";
-            for(let nom in configJeux) {
-                list.innerHTML += `
-                    <div class="admin-row">
-                        <span>${nom}</span>
-                        <input type="number" id="inp-${nom.replace(/\s+/g, '')}" value="${configJeux[nom]}" style="width:40px">
-                        <button onclick="saveAdmin('${nom}')">OK</button>
-                    </div>`;
-            }
-        }
-
-        function saveAdmin(nom) {
-            const val = document.getElementById('inp-'+nom.replace(/\s+/g, '')).value;
-            configJeux[nom] = parseInt(val);
-            localStorage.setItem('configJeux', JSON.stringify(configJeux));
-            alert(nom + " réglé sur " + val + " min.");
-        }
-    </script>
-</body>
-</html>
+            // Appliquer l'image sur l'icône
+            document.getElementById('game-icon').className = 'game-icon-small ' + classe;
