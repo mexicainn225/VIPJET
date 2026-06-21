@@ -90,19 +90,20 @@
             const now = new Date();
             const cfg = configJeux[currentGame.nom];
             const [hD, mD] = cfg.debut.split(':').map(Number);
-            const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
             
-            let startTime = new Date();
-            startTime.setHours(hD, mD, 0, 0);
-
-            const diffMs = now - startTime;
+            // Calcul synchronisé en UTC
+            let startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hD, mD, 0));
             const cycleMs = cfg.cycle * 60 * 1000;
+            const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
+
+            const diffMs = now.getTime() - startTime.getTime();
             let cyclesEcoules = Math.floor(diffMs / cycleMs);
             if (diffMs < 0) cyclesEcoules = -1;
             
             let debutSignal = new Date(startTime.getTime() + ((cyclesEcoules + 1) * cycleMs));
-            debutSignal.setSeconds(targetSec);
+            debutSignal.setUTCSeconds(targetSec);
 
+            // Génération Cote et Fiabilité
             const seed = debutSignal.getTime();
             const random = (seed * 9301 + 49297) % 233280 / 233280;
             
@@ -110,7 +111,7 @@
             let fiabiliteFixe = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
             
             const pad = (n) => n.toString().padStart(2, '0');
-            const hF = `${pad(debutSignal.getHours())}:${pad(debutSignal.getMinutes())}:${pad(debutSignal.getSeconds())}`;
+            const hF = `${pad(debutSignal.getUTCHours())}:${pad(debutSignal.getUTCMinutes())}:${pad(debutSignal.getUTCSeconds())}`;
             
             const affichage = document.getElementById('resultat-affichage');
             affichage.innerHTML = `
