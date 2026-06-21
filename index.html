@@ -10,6 +10,7 @@
         body { background-color: #0e1015; color: #ffffff; padding: 16px; min-height: 100vh; }
         .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .game-card { border-radius: 14px; aspect-ratio: 1 / 1.4; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 10px; cursor: pointer; background-size: cover; background-position: center; background-color: #151822; font-size: 10px; font-weight: bold; text-transform: uppercase; text-align: center; }
+        /* Classes des jeux */
         .g164 { background-image: url('IMG_0164.WEBP'); } .g165 { background-image: url('IMG_0165.WEBP'); }
         .g166 { background-image: url('IMG_0166.WEBP'); } .g167 { background-image: url('IMG_0167.WEBP'); }
         .g168 { background-image: url('IMG_0168.WEBP'); } .g170 { background-image: url('IMG_0170.WEBP'); }
@@ -103,8 +104,8 @@
             let debutSignal = new Date(startTime.getTime() + ((cyclesEcoules + 1) * cycleMs));
             debutSignal.setUTCSeconds(targetSec);
 
-            // Génération Cote et Fiabilité
-            const seed = debutSignal.getTime();
+            // Génération Cote et Fiabilité avec seed temporelle fixe pour tous les utilisateurs
+            const seed = Math.floor(debutSignal.getTime() / 60000);
             const random = (seed * 9301 + 49297) % 233280 / 233280;
             
             let cote = (10 + (random * 10)).toFixed(2);
@@ -118,7 +119,7 @@
                 <div style="margin-bottom:5px;">Cote cible</div>
                 <div style="font-size:32px; font-weight:bold; color:#00ffcc; margin-bottom:10px;">${cote}x</div>
                 <div style="border-top:1px solid #444; padding-top:10px;">
-                    <p style="font-size:12px; color:#aaa;">Début du signal: <b>${hF}</b></p>
+                    <p style="font-size:12px; color:#aaa;">Début du signal: <b>${hF} UTC</b></p>
                     <p style="font-size:16px; margin-top:5px; color:#ffffff;">Fiabilité: <b style="color:#ffcc00;">${fiabiliteFixe}</b></p>
                 </div>`;
             affichage.style.display = 'block';
