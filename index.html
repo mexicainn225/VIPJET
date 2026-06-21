@@ -92,28 +92,34 @@
             const [hD, mD] = cfg.debut.split(':').map(Number);
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
             
-            // On calcule en partant de l'heure de début configurée
             let startTime = new Date();
             startTime.setHours(hD, mD, 0, 0);
 
             const diffMs = now - startTime;
             const cycleMs = cfg.cycle * 60 * 1000;
-            
-            // Calcul mathématique du cycle en cours (ne s'arrête jamais)
             let cyclesEcoules = Math.floor(diffMs / cycleMs);
+            if (diffMs < 0) cyclesEcoules = -1;
             
             let debutSignal = new Date(startTime.getTime() + ((cyclesEcoules + 1) * cycleMs));
             debutSignal.setSeconds(targetSec);
 
-            // Génération de la cote
             const seed = debutSignal.getTime();
-            const cote = (((seed % 1000) / 100) + 1.2).toFixed(2);
+            const random = (seed * 9301 + 49297) % 233280 / 233280;
+            
+            let cote = (10 + (random * 10)).toFixed(2);
+            let fiabiliteFixe = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
             
             const pad = (n) => n.toString().padStart(2, '0');
             const hF = `${pad(debutSignal.getHours())}:${pad(debutSignal.getMinutes())}:${pad(debutSignal.getSeconds())}`;
             
             const affichage = document.getElementById('resultat-affichage');
-            affichage.innerHTML = `<p>Cote cible: <b>${cote}x</b></p><p>Début du signal: <b style="color:#00ffcc">${hF}</b></p>`;
+            affichage.innerHTML = `
+                <div style="margin-bottom:5px;">Cote cible</div>
+                <div style="font-size:32px; font-weight:bold; color:#00ffcc; margin-bottom:10px;">${cote}x</div>
+                <div style="border-top:1px solid #444; padding-top:10px;">
+                    <p style="font-size:12px; color:#aaa;">Début du signal: <b>${hF}</b></p>
+                    <p style="font-size:16px; margin-top:5px; color:#ffffff;">Fiabilité: <b style="color:#ffcc00;">${fiabiliteFixe}</b></p>
+                </div>`;
             affichage.style.display = 'block';
         }
 
