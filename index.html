@@ -52,7 +52,7 @@
     <script>
         let configJeux = {};
 
-        // Chargement du fichier JSON externe pour synchronisation parfaite
+        // Chargement automatique du JSON
         async function chargerConfig() {
             try {
                 const response = await fetch('config.json?t=' + new Date().getTime());
@@ -94,9 +94,19 @@
             const seed = Math.floor(debutSignal.getTime() / 60000);
             const random = (seed * 9301 + 49297) % 233280 / 233280;
             let cote = (10 + (random * 10)).toFixed(2);
+            let fiabiliteFixe = (currentGame.nom === 'Lucky Jet') ? 1.5 : 2.0;
+            
+            const pad = (n) => n.toString().padStart(2, '0');
+            const hF = `${pad(debutSignal.getUTCHours())}:${pad(debutSignal.getUTCMinutes())}:${pad(debutSignal.getUTCSeconds())}`;
             
             const affichage = document.getElementById('resultat-affichage');
-            affichage.innerHTML = `<div style="font-size:32px; font-weight:bold; color:#00ffcc;">${cote}x</div>`;
+            affichage.innerHTML = `
+                <div style="margin-bottom:5px;">Cote cible</div>
+                <div style="font-size:32px; font-weight:bold; color:#00ffcc; margin-bottom:10px;">${cote}x</div>
+                <div style="border-top:1px solid #444; padding-top:10px;">
+                    <p style="font-size:12px; color:#aaa;">Début du signal: <b>${hF} UTC</b></p>
+                    <p style="font-size:16px; margin-top:5px; color:#ffffff;">Fiabilité: <b style="color:#ffcc00;">${fiabiliteFixe}</b></p>
+                </div>`;
             affichage.style.display = 'block';
         }
     </script>
