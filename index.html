@@ -92,18 +92,20 @@
             const [hD, mD] = cfg.debut.split(':').map(Number);
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
             
+            // On calcule en partant de l'heure de début configurée
             let startTime = new Date();
             startTime.setHours(hD, mD, 0, 0);
 
             const diffMs = now - startTime;
             const cycleMs = cfg.cycle * 60 * 1000;
             
+            // Calcul mathématique du cycle en cours (ne s'arrête jamais)
             let cyclesEcoules = Math.floor(diffMs / cycleMs);
-            if (cyclesEcoules < 0) cyclesEcoules = -1;
             
             let debutSignal = new Date(startTime.getTime() + ((cyclesEcoules + 1) * cycleMs));
             debutSignal.setSeconds(targetSec);
 
+            // Génération de la cote
             const seed = debutSignal.getTime();
             const cote = (((seed % 1000) / 100) + 1.2).toFixed(2);
             
