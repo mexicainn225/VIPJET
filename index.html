@@ -64,7 +64,6 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
 
-        // Stockage des réglages (Cycle et Heure de début)
         let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
             'Lucky Jet': {cycle: 4, debut: '00:00'}, 'Rocket Queen': {cycle: 3, debut: '00:00'},
             '1win Crash': {cycle: 3, debut: '00:00'}, 'Tropicana': {cycle: 5, debut: '00:00'},
@@ -94,24 +93,26 @@
             const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
             
             let startTime = new Date();
-            startTime.setHours(hD, mD, targetSec, 0);
+            startTime.setHours(hD, mD, 0, 0);
 
             const diffMs = now - startTime;
             const cycleMs = cfg.cycle * 60 * 1000;
+            
             let cyclesEcoules = Math.floor(diffMs / cycleMs);
-            if (cyclesEcoules < 0) cyclesEcoules = 0;
+            if (cyclesEcoules < 0) cyclesEcoules = -1;
             
-            let debutSignal = new Date(startTime.getTime() + (cyclesEcoules * cycleMs));
-            if (debutSignal < now) debutSignal = new Date(debutSignal.getTime() + cycleMs);
+            let debutSignal = new Date(startTime.getTime() + ((cyclesEcoules + 1) * cycleMs));
+            debutSignal.setSeconds(targetSec);
 
-            const pad = (n) => n.toString().padStart(2, '0');
-            const heureF = `${pad(debutSignal.getHours())}:${pad(debutSignal.getMinutes())}:${pad(debutSignal.getSeconds())}`;
-            
             const seed = debutSignal.getTime();
-            const cote = ((seed % 1000 / 100) + 1.2).toFixed(2);
+            const cote = (((seed % 1000) / 100) + 1.2).toFixed(2);
             
-            document.getElementById('resultat-affichage').innerHTML = `<p>Cote cible: <b>${cote}x</b></p><p>Signal: <b>${heureF}</b></p>`;
-            document.getElementById('resultat-affichage').style.display = 'block';
+            const pad = (n) => n.toString().padStart(2, '0');
+            const hF = `${pad(debutSignal.getHours())}:${pad(debutSignal.getMinutes())}:${pad(debutSignal.getSeconds())}`;
+            
+            const affichage = document.getElementById('resultat-affichage');
+            affichage.innerHTML = `<p>Cote cible: <b>${cote}x</b></p><p>Début du signal: <b style="color:#00ffcc">${hF}</b></p>`;
+            affichage.style.display = 'block';
         }
 
         function ouvrirAdmin() {
@@ -121,10 +122,10 @@
             for(let nom in configJeux) {
                 list.innerHTML += `
                 <div class="admin-row">
-                    <span>${nom}</span>
+                    <span style="font-weight:bold;">${nom}</span>
                     <div class="admin-controls">
-                        <input type="number" id="cyc-${nom}" value="${configJeux[nom].cycle}" style="width:40px"> min
-                        <input type="time" id="deb-${nom}" value="${configJeux[nom].debut}" style="width:80px">
+                        <input type="number" id="cyc-${nom.replace(/\s/g,'')}" value="${configJeux[nom].cycle}" style="width:40px"> min
+                        <input type="time" id="deb-${nom.replace(/\s/g,'')}" value="${configJeux[nom].debut}" style="width:80px">
                         <button onclick="saveAdmin('${nom}')">OK</button>
                     </div>
                 </div>`;
@@ -132,8 +133,11 @@
         }
 
         function saveAdmin(nom) {
-            configJeux[nom].cycle = parseInt(document.getElementById('cyc-'+nom).value);
-            configJeux[nom].debut = document.getElementById('deb-'+nom).value;
+            const key = nom.replace(/\s/g, '');
+            configJeux[nom] = {
+                cycle: parseInt(document.getElementById('cyc-'+key).value),
+                debut: document.getElementById('deb-'+key).value
+            };
             localStorage.setItem('configJeux', JSON.stringify(configJeux));
             alert("Réglages mis à jour pour " + nom);
         }
