@@ -86,12 +86,17 @@
             document.getElementById('resultat-affichage').style.display = 'none';
         }
 
-        function lancerCalcul() {
-            const now = Date.now();
+        async function lancerCalcul() {
+            // Récupération de l'heure mondiale réelle (Synchronisation serveur)
+            const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
+            const data = await response.json();
+            const now = new Date(data.datetime).getTime();
+            
             const cfg = configJeux[currentGame.nom];
             const [hD, mD] = cfg.debut.split(':').map(Number);
             
-            const date = new Date();
+            // Calcul du début de cycle UTC
+            const date = new Date(now);
             const startOfDay = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), hD, mD, 0);
             
             const cycleMs = cfg.cycle * 60 * 1000;
@@ -104,7 +109,7 @@
             let debutSignal = new Date(startOfDay + ((cyclesEcoules + 1) * cycleMs));
             debutSignal.setUTCSeconds(targetSec);
 
-            // Synchronisation : on utilise le timestamp UTC divisé par 60000 (1 min)
+            // Seed basée sur la minute UTC mondiale
             const seed = Math.floor(debutSignal.getTime() / 60000);
             const random = (seed * 9301 + 49297) % 233280 / 233280;
             
