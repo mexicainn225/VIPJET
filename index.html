@@ -22,8 +22,7 @@
         .btn-action { margin-top: 10px; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 30px; border: none; cursor: pointer; width: 80%; }
         .btn-signal { background: #00ffcc; color: #0e1015; }
         .admin-btn { position: fixed; bottom: 20px; right: 20px; background: #ff3333; color: white; border-radius: 50%; width: 50px; height: 50px; border: none; display: none; z-index: 99; }
-        .admin-row { display: flex; flex-direction: column; width: 95%; margin: 10px 0; background: #222; padding: 10px; border-radius: 8px; font-size: 12px; }
-        .admin-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .admin-row { display: flex; justify-content: space-between; align-items: center; width: 90%; margin: 10px 0; background: #222; padding: 10px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -54,7 +53,12 @@
 
     <div id="admin-interface">
         <h2>PANNEAU ADMIN</h2>
-        <div id="admin-list" style="width:100%; height: 70vh; overflow-y: auto;"></div>
+        <div class="admin-row">
+            <span>Décalage Global (sec):</span>
+            <input type="number" id="globalOffset" value="0" style="width:60px;">
+            <button onclick="saveGlobalOffset()">OK</button>
+        </div>
+        <div id="admin-list" style="width:100%;"></div>
         <button class="btn-action" onclick="document.getElementById('admin-interface').style.display='none'">FERMER</button>
     </div>
 
@@ -65,10 +69,8 @@
         tg.ready();
 
         let configJeux = JSON.parse(localStorage.getItem('configJeux')) || {
-            'Lucky Jet': {cycle: 4, debut: '00:00'}, 'Rocket Queen': {cycle: 3, debut: '00:00'},
-            '1win Crash': {cycle: 3, debut: '00:00'}, 'Tropicana': {cycle: 5, debut: '00:00'},
-            'Fortune Crash': {cycle: 7, debut: '00:00'}, 'Meta Crash': {cycle: 6, debut: '00:00'},
-            'Empire Crime': {cycle: 6, debut: '00:00'}, 'Astronaut': {cycle: 5, debut: '00:00'}, 'Aviator': {cycle: 4, debut: '00:00'}
+            'Lucky Jet': 4, 'Rocket Queen': 3, '1win Crash': 3, 'Tropicana': 5,
+            'Fortune Crash': 7, 'Meta Crash': 6, 'Empire Crime': 6, 'Astronaut': 5, 'Aviator': 4
         };
 
         if(tg.initDataUnsafe.user && tg.initDataUnsafe.user.id == 5724620019) {
@@ -86,61 +88,58 @@
             document.getElementById('resultat-affichage').style.display = 'none';
         }
 
-        function lancerCalcul() {
-            const now = new Date();
-            const cfg = configJeux[currentGame.nom];
-            const [hD, mD] = cfg.debut.split(':').map(Number);
-            const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
-            
-            let startTime = new Date();
-            startTime.setHours(hD, mD, targetSec, 0);
+        function saveGlobalOffset() {
+            localStorage.setItem('globalOffset', document.getElementById('globalOffset').value);
+            alert("Décalage enregistré.");
+        }
 
-            const diffMs = now - startTime;
-            const cycleMs = cfg.cycle * 60 * 1000;
+        function lancerCalcul() {
+            const offset = parseInt(localStorage.getItem('globalOffset')) || 0;
+            const now = new Date(Date.now() + (offset * 1000));
+            const intervalMin = configJeux[currentGame.nom] || 4;
+            const targetSec = (currentGame.nom === 'Lucky Jet') ? 30 : 50;
+
+            let debutSignal = new Date(now);
+            debutSignal.setSeconds(targetSec);
+            debutSignal.setMilliseconds(0);
             
-            let cyclesEcoules = Math.floor(diffMs / cycleMs);
-            
-            // Calcul du prochain signal : on prend le cycle suivant
-            let prochainSignalTime = new Date(startTime.getTime() + ((cyclesEcoules + 1) * cycleMs));
-            
-            // Si par hasard le calcul est dans le passé, on décale d'un cycle
-            if (prochainSignalTime < now) {
-                prochainSignalTime = new Date(prochainSignalTime.getTime() + cycleMs);
+            const minutes = debutSignal.getMinutes();
+            debutSignal.setMinutes(Math.floor(minutes / intervalMin) * intervalMin);
+
+            // On affiche le prochain créneau automatiquement
+            if (debutSignal.getTime() < now.getTime() - 2000) {
+                debutSignal.setMinutes(debutSignal.getMinutes() + intervalMin);
             }
 
-            const pad = (n) => n.toString().padStart(2, '0');
-            const heureF = `${pad(prochainSignalTime.getHours())}:${pad(prochainSignalTime.getMinutes())}:${pad(prochainSignalTime.getSeconds())}`;
-            
-            const seed = prochainSignalTime.getTime();
-            const cote = ((seed % 1000 / 100) + 1.2).toFixed(2);
+            const pad = (num) => num.toString().padStart(2, '0');
+            const heureDebut = `${pad(debutSignal.getHours())}:${pad(debutSignal.getMinutes())}:${pad(debutSignal.getSeconds())}`;
+
+            const seed = debutSignal.getTime();
+            const seededRandom = (seed * 9301 + 49297) % 233280 / 233280;
+            const cote = (seededRandom * (20 - 10) + 10).toFixed(2);
             
             const affichage = document.getElementById('resultat-affichage');
-            affichage.innerHTML = `<p>Cote cible: <b>${cote}x</b></p><p>Prochain signal: <b>${heureF}</b></p>`;
+            affichage.innerHTML = `
+                <p>Cote cible: <b>${cote}x</b></p>
+                <p>Début du signal: <b style="color:#00ffcc">${heureDebut}</b></p>`;
             affichage.style.display = 'block';
         }
 
         function ouvrirAdmin() {
             document.getElementById('admin-interface').style.display = 'flex';
+            document.getElementById('globalOffset').value = localStorage.getItem('globalOffset') || 0;
             const list = document.getElementById('admin-list');
             list.innerHTML = "";
             for(let nom in configJeux) {
-                list.innerHTML += `
-                <div class="admin-row">
-                    <span>${nom}</span>
-                    <div class="admin-controls">
-                        <input type="number" id="cyc-${nom}" value="${configJeux[nom].cycle}" style="width:40px"> min
-                        <input type="time" id="deb-${nom}" value="${configJeux[nom].debut}" style="width:80px">
-                        <button onclick="saveAdmin('${nom}')">OK</button>
-                    </div>
-                </div>`;
+                list.innerHTML += `<div class="admin-row"><span>${nom}</span><input type="number" id="inp-${nom.replace(/\s/g,'')}" value="${configJeux[nom]}">min <button onclick="saveAdmin('${nom}')">OK</button></div>`;
             }
         }
 
         function saveAdmin(nom) {
-            configJeux[nom].cycle = parseInt(document.getElementById('cyc-'+nom).value);
-            configJeux[nom].debut = document.getElementById('deb-'+nom).value;
+            const val = document.getElementById('inp-'+nom.replace(/\s/g, '')).value;
+            configJeux[nom] = parseInt(val);
             localStorage.setItem('configJeux', JSON.stringify(configJeux));
-            alert("Réglages mis à jour pour " + nom);
+            alert("Intervalle pour " + nom + " fixé à " + val + " min.");
         }
 
         function fermerJeu() { location.reload(); }
